@@ -10,14 +10,14 @@ describe("Circle tests", () => {
     const circle = new Circle(center, radius);
 
     it("inside", () => {
-      expect(circle.contains(center)).toBeTruthy();
+      expect(circle.contains(center)).toBe(true);
     });
 
     it("on border", () => {
-      expect(circle.contains(center.add(new Vector(0, radius)))).toBeTruthy();
-      expect(circle.contains(center.add(new Vector(0, -radius)))).toBeTruthy();
-      expect(circle.contains(center.add(new Vector(radius, 0)))).toBeTruthy();
-      expect(circle.contains(center.add(new Vector(-radius, 0)))).toBeTruthy();
+      expect(circle.contains(center.add(new Vector(0, radius)))).toBe(true);
+      expect(circle.contains(center.add(new Vector(0, -radius)))).toBe(true);
+      expect(circle.contains(center.add(new Vector(radius, 0)))).toBe(true);
+      expect(circle.contains(center.add(new Vector(-radius, 0)))).toBe(true);
     });
 
     it("far", () => {

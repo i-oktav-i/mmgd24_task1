@@ -1,31 +1,28 @@
+import { Edge } from "../Edge/Edge";
 import { GameObject } from "../GameObject";
 import { Vector } from "../Vector";
 import { objectEntries, objectFromEntries } from "../utils";
 
 export class Triangle extends GameObject {
-  private _edge: number;
   private oneThirdHeight: number;
   private _normalVertices: Readonly<Record<"top" | "left" | "right", Vector>>;
-  private _vertices: typeof this._normalVertices;
 
-  /** `(A**2 + B**2) ** 0.5` */
-  private distanceDivider: number = 2;
-  private leftEdgeFuncConst: number;
-  private readonly leftEdgeFunc = (x: number) =>
-    Triangle.sqrt3 * x + this.leftEdgeFuncConst;
-  private rightEdgeFuncConst: number;
-  private readonly rightEdgeFunc = (x: number) =>
-    -Triangle.sqrt3 * x + this.rightEdgeFuncConst;
+  private _edges: Readonly<Record<"bottom" | "left" | "right", Edge>>;
+  public get edges() {
+    return this._edges;
+  }
+  public set edges(value) {
+    this._edges = value;
+  }
+
+  private _vertices: typeof this._normalVertices;
 
   constructor(center: Vector, radius: number) {
     super(center, radius);
 
-    // const oneThirdHeight = ((3 / 4) * edge ** 2) ** 0.5 / 3;
-
     this.oneThirdHeight = radius / 2;
 
     const edge = Triangle.sqrt3 * radius;
-    this._edge = edge;
 
     this._normalVertices = {
       top: new Vector(0, this.oneThirdHeight * 2),
@@ -49,15 +46,11 @@ export class Triangle extends GameObject {
       ])
     );
 
-    this.leftEdgeFuncConst =
-      this.vertices.left.y - this.vertices.left.x * Triangle.sqrt3;
-
-    this.rightEdgeFuncConst =
-      this.vertices.right.y - this.vertices.right.x * -Triangle.sqrt3;
-  }
-
-  get edge() {
-    return this._edge;
+    this.edges = {
+      bottom: new Edge(this.vertices.left, this.vertices.right),
+      left: new Edge(this.vertices.left, this.vertices.top),
+      right: new Edge(this.vertices.right, this.vertices.top),
+    };
   }
 
   get vertices() {
@@ -65,22 +58,22 @@ export class Triangle extends GameObject {
   }
 
   contains = (point: Vector) => {
-    return (
-      point.y >= this.vertices.left.y &&
-      this.leftEdgeFunc(point.x) >= point.y &&
-      this.rightEdgeFunc(point.x) >= point.y
-    );
+    return this.distanceToEdges(point).every((distance) => distance <= 0);
   };
 
   distanceToEdges(point: Vector) {
     return [
-      this.vertices.left.y - point.y,
-      (point.y - Triangle.sqrt3 * point.x - this.leftEdgeFuncConst) /
-        this.distanceDivider,
-      (point.y + Triangle.sqrt3 * point.x - this.rightEdgeFuncConst) /
-        this.distanceDivider,
+      this.edges.bottom.distanceTo(point),
+      -this.edges.left.distanceTo(point),
+      -this.edges.right.distanceTo(point),
     ];
   }
+
+  isCrossing = (edge: Edge) => {
+    return Object.values(this.edges).some((selfEdge) =>
+      selfEdge.isCrossing(edge)
+    );
+  };
 
   draw = (ctx: CanvasRenderingContext2D) => {
     ctx.beginPath();

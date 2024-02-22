@@ -34,4 +34,10 @@ describe("Vector tests", () => {
 
     expect(distance).toBe(5);
   });
+
+  it("isEqual test", () => {
+    const point = new Vector(Math.random(), Math.random());
+
+    expect(point.isEqual(point)).toBe(true);
+  });
 });

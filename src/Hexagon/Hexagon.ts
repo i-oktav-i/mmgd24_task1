@@ -1,9 +1,14 @@
+import { Edge } from "../Edge/Edge";
 import { GameObject } from "../GameObject";
 import { Vector } from "../Vector";
 import { objectEntries, objectFromEntries } from "../utils";
 
 export class Hexagon extends GameObject {
   private _edge: number;
+
+  public get edge(): number {
+    return this._edge;
+  }
 
   private triageHeight: number;
   private halfEdge: number;
@@ -13,22 +18,20 @@ export class Hexagon extends GameObject {
   >;
   private _vertices: typeof this._normalVertices;
 
-  /** `(A**2 + B**2) ** 0.5` */
-  private distanceDivider: number = 2;
+  public get vertices() {
+    return this._vertices;
+  }
 
-  private leftTopEdgeFuncConst: number;
-  private rightTopEdgeFuncConst: number;
+  private _edges: Readonly<
+    Record<Uncapitalize<`${"bottom" | "top"}${"Left" | "" | "Right"}`>, Edge>
+  >;
 
-  private leftTiltedEdgesFunc = (x: number) => {
-    const topValue = Hexagon.sqrt3 * x + this.leftTopEdgeFuncConst;
-
-    return [topValue, topValue - 4 * this.triageHeight];
-  };
-  private rightTiltedEdgesFunc = (x) => {
-    const topValue = -Hexagon.sqrt3 * x + this.rightTopEdgeFuncConst;
-
-    return [topValue, topValue - 4 * this.triageHeight];
-  };
+  public get edges() {
+    return this._edges;
+  }
+  private set edges(value) {
+    this._edges = value;
+  }
 
   constructor(center: Vector, edge: number) {
     super(center, edge);
@@ -63,64 +66,36 @@ export class Hexagon extends GameObject {
       ])
     );
 
-    this.leftTopEdgeFuncConst =
-      this.vertices.left.y - this.vertices.left.x * Hexagon.sqrt3;
-
-    this.rightTopEdgeFuncConst =
-      this.vertices.right.y + this.vertices.right.x * Hexagon.sqrt3;
+    this.edges = {
+      bottom: new Edge(this.vertices.bottomLeft, this.vertices.bottomRight),
+      bottomLeft: new Edge(this.vertices.bottomLeft, this.vertices.left),
+      bottomRight: new Edge(this.vertices.bottomRight, this.vertices.right),
+      top: new Edge(this.vertices.topLeft, this.vertices.topRight),
+      topLeft: new Edge(this.vertices.topLeft, this.vertices.left),
+      topRight: new Edge(this.vertices.topRight, this.vertices.right),
+    };
   };
 
-  public get edge(): number {
-    return this._edge;
-  }
-
-  public get vertices() {
-    return this._vertices;
-  }
-
   contains = (point: Vector) => {
-    if (
-      point.y < this.vertices.bottomLeft.y ||
-      point.y > this.vertices.topLeft.y
-    ) {
-      return false;
-    }
-
-    const leftTiltedEdges = this.leftTiltedEdgesFunc(point.x);
-
-    if (point.y > leftTiltedEdges[0] || point.y < leftTiltedEdges[1]) {
-      return false;
-    }
-
-    const rightTiltedEdges = this.rightTiltedEdgesFunc(point.x);
-
-    if (point.y > rightTiltedEdges[0] || point.y < rightTiltedEdges[1]) {
-      return false;
-    }
-
-    return true;
+    this.distanceToEdges(point).every((distance) => distance <= 0);
   };
 
   distanceToEdges(point: Vector) {
     return [
-      this.vertices.bottomLeft.y - point.y,
-      -(this.vertices.topLeft.y - point.y),
-      (point.y - Hexagon.sqrt3 * point.x - this.leftTopEdgeFuncConst) /
-        this.distanceDivider,
-      (-point.y +
-        Hexagon.sqrt3 * point.x +
-        this.leftTopEdgeFuncConst -
-        this.triageHeight * 4) /
-        this.distanceDivider,
-      (point.y + Hexagon.sqrt3 * point.x - this.rightTopEdgeFuncConst) /
-        this.distanceDivider,
-      (point.y +
-        Hexagon.sqrt3 * point.x -
-        this.rightTopEdgeFuncConst +
-        this.triageHeight * 4) /
-        this.distanceDivider,
+      this.edges.bottom.distanceTo(point),
+      -this.edges.top.distanceTo(point),
+      this.edges.bottomLeft.distanceTo(point),
+      this.edges.bottomRight.distanceTo(point),
+      -this.edges.topLeft.distanceTo(point),
+      -this.edges.topRight.distanceTo(point),
     ];
   }
+
+  isCrossing = (edge: Edge) => {
+    return Object.values(this.edges).some((selfEdge) =>
+      selfEdge.isCrossing(edge)
+    );
+  };
 
   draw = (ctx: CanvasRenderingContext2D) => {
     ctx.beginPath();

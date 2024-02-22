@@ -47,11 +47,11 @@ describe("Collider tests", () => {
           zero
         );
 
-        expect(firstCollider.checkCollision(secondCollider)).toBeTruthy();
-        expect(secondCollider.checkCollision(firstCollider)).toBeTruthy();
+        expect(firstCollider.checkCollision(secondCollider)).toBe(true);
+        expect(secondCollider.checkCollision(firstCollider)).toBe(true);
 
-        expect(firstCollider.checkCollision(thirdCollider)).toBeTruthy();
-        expect(thirdCollider.checkCollision(firstCollider)).toBeTruthy();
+        expect(firstCollider.checkCollision(thirdCollider)).toBe(true);
+        expect(thirdCollider.checkCollision(firstCollider)).toBe(true);
 
         expect(secondCollider.checkCollision(thirdCollider)).toBeFalsy();
         expect(thirdCollider.checkCollision(secondCollider)).toBeFalsy();

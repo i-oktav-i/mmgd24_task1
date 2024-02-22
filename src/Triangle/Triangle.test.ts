@@ -10,7 +10,7 @@ describe("Triangle tests", () => {
 
   describe("contains tests", () => {
     it("center", () => {
-      expect(triage.contains(triage.center)).toBeTruthy();
+      expect(triage.contains(triage.center)).toBe(true);
     });
 
     it("vertices", () => {
@@ -27,7 +27,7 @@ describe("Triangle tests", () => {
         triage.vertices.left.y
       );
 
-      expect(triage.contains(point)).toBeTruthy();
+      expect(triage.contains(point)).toBe(true);
     });
 
     it("far", () => {
@@ -40,7 +40,11 @@ describe("Triangle tests", () => {
   describe("distance to edges tests", () => {
     it("center", () => {
       expect(triage.distanceToEdges(center)).toEqual(
-        expect.arrayContaining([-radius / 2, -radius / 2, -radius / 2])
+        expect.arrayContaining([
+          expect.closeTo(-radius / 2),
+          expect.closeTo(-radius / 2),
+          expect.closeTo(-radius / 2),
+        ])
       );
     });
     it("vertices", () => {
@@ -50,9 +54,21 @@ describe("Triangle tests", () => {
 
       expect(results).toEqual(
         expect.arrayContaining([
-          expect.arrayContaining([0, 0, -height]),
-          expect.arrayContaining([0, 0, -height]),
-          expect.arrayContaining([0, 0, -height]),
+          expect.arrayContaining([
+            expect.closeTo(0),
+            expect.closeTo(0),
+            expect.closeTo(-height),
+          ]),
+          expect.arrayContaining([
+            expect.closeTo(0),
+            expect.closeTo(0),
+            expect.closeTo(-height),
+          ]),
+          expect.arrayContaining([
+            expect.closeTo(0),
+            expect.closeTo(0),
+            expect.closeTo(-height),
+          ]),
         ])
       );
     });
@@ -60,8 +76,13 @@ describe("Triangle tests", () => {
     it("far", () => {
       const point = new Vector(center.x, center.y + radius + height);
 
+      expect.closeTo(-2 * height);
       expect(triage.distanceToEdges(point)).toEqual(
-        expect.arrayContaining([-2 * height, height / 2, height / 2])
+        expect.arrayContaining([
+          expect.closeTo(-2 * height),
+          expect.closeTo(height / 2),
+          expect.closeTo(height / 2),
+        ])
       );
     });
   });

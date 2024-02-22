@@ -44,5 +44,5 @@ export class GameObject {
     Before: "Before",
     After: "After",
     Between: "Between",
-  };
+  } as const;
 }

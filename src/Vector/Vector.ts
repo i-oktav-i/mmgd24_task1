@@ -22,4 +22,12 @@ export class Vector {
   distanceTo(other: Vector) {
     return ((this.x - other.x) ** 2 + (this.y - other.y) ** 2) ** 0.5;
   }
+
+  isEqual(other: Vector) {
+    return this.x === other.x && this.y === other.y;
+  }
+
+  scale(scale: number) {
+    return new Vector(this.x * scale, this.y * scale);
+  }
 }

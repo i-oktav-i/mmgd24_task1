@@ -10,7 +10,7 @@ describe("Hexagon tests", () => {
 
   describe("contains tests", () => {
     it("center", () => {
-      expect(hexagon.contains(center)).toBeTruthy();
+      expect(hexagon.contains(center)).toBe(true);
     });
 
     it("vertices", () => {
@@ -25,20 +25,22 @@ describe("Hexagon tests", () => {
         hexagon.vertices.bottomLeft.y
       );
 
-      expect(hexagon.contains(point)).toBeTruthy();
+      expect(hexagon.contains(point)).toBe(true);
     });
 
     it("far", () => {
       const point = new Vector(center.x, center.y + radius);
 
-      expect(hexagon.contains(point)).toBeFalsy();
+      expect(hexagon.contains(point)).toBe(false);
     });
   });
 
   describe("distance to edges tests", () => {
     it("center", () => {
       expect(hexagon.distanceToEdges(center)).toEqual(
-        expect.arrayContaining(Array.from(Array(6), () => -height))
+        expect.arrayContaining(
+          Array.from(Array(6), () => expect.closeTo(-height))
+        )
       );
     });
 
@@ -51,12 +53,12 @@ describe("Hexagon tests", () => {
         expect.arrayContaining(
           Array.from(Array(6), () =>
             expect.arrayContaining([
-              0,
-              0,
-              -height,
-              -height,
-              -2 * height,
-              -2 * height,
+              expect.closeTo(0),
+              expect.closeTo(0),
+              expect.closeTo(-height),
+              expect.closeTo(-height),
+              expect.closeTo(-2 * height),
+              expect.closeTo(-2 * height),
             ])
           )
         )
@@ -68,12 +70,12 @@ describe("Hexagon tests", () => {
 
       expect(hexagon.distanceToEdges(point)).toEqual(
         expect.arrayContaining([
-          0,
-          0,
-          height,
-          -2 * height,
-          -2 * height,
-          -3 * height,
+          expect.closeTo(0),
+          expect.closeTo(0),
+          expect.closeTo(height),
+          expect.closeTo(-2 * height),
+          expect.closeTo(-2 * height),
+          expect.closeTo(-3 * height),
         ])
       );
     });

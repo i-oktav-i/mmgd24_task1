@@ -49,13 +49,8 @@ export class Collider {
         other.gameObject instanceof Triangle ||
         other.gameObject instanceof Hexagon
       ) {
-        return (
-          Object.values(other.gameObject.vertices).some(
-            this.gameObject.contains
-          ) ||
-          Object.values(this.gameObject.vertices).some(
-            other.gameObject.contains
-          )
+        return Object.values(other.gameObject.edges).some(
+          this.gameObject.isCrossing
         );
       }
 
@@ -80,6 +75,30 @@ export class Collider {
       this.gameObject.relativeToVertical(bottomRight.x),
     ].some((item) => item === GameObject.Relation.Between);
   }
+
+  inBounds(topLeft: Vector, bottomRight: Vector) {
+    return (
+      [
+        this.gameObject.relativeToHorizontal(topLeft.y),
+        this.gameObject.relativeToVertical(bottomRight.x),
+      ].every(
+        (item) =>
+          item === GameObject.Relation.Between ||
+          item === GameObject.Relation.Before
+      ) &&
+      [
+        this.gameObject.relativeToHorizontal(bottomRight.y),
+        this.gameObject.relativeToVertical(topLeft.x),
+      ].every(
+        (item) =>
+          item === GameObject.Relation.Between ||
+          item === GameObject.Relation.After
+      )
+    );
+  }
+
+  relativeToHorizontal = (y: number) => this.gameObject.relativeToHorizontal(y);
+  relativeToVertical = (x: number) => this.gameObject.relativeToVertical(x);
 
   draw = (ctx: CanvasRenderingContext2D) => {
     ctx.fillStyle = colorsMap[this.hp] || "#00000000";
