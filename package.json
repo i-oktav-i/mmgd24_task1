@@ -2,10 +2,10 @@
   "name": "ping-pong-test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "coverage": "jest --coverage",
     "start": "parcel index.html",
+    "build": "parcel build index.html",
     "test": "jest --verbose",
     "watch": "jest --watch"
   },
