@@ -6,7 +6,7 @@ export const quadTree = (
   colliders: Collider[],
   bounds: [topLeft: Vector, bottomRight: Vector],
   onCollide: (first: Collider, second: Collider) => void,
-  capacity = 9,
+  capacity = 4,
   d = 0
 ) => {
   const topLeft: Collider[] = [];
