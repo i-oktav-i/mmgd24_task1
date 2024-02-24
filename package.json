@@ -5,7 +5,7 @@
   "scripts": {
     "coverage": "jest --coverage",
     "start": "parcel index.html",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --public-url /mmgd24_task1/",
     "test": "jest --verbose",
     "watch": "jest --watch"
   },
